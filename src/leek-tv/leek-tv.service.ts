@@ -3,6 +3,7 @@ import { executablePath } from 'puppeteer';
 import { getStream, launch } from 'puppeteer-stream';
 import { TwitchService } from '../twitch/twitch.service';
 import { LeekwarsService } from '../leekwars/leekwars.service';
+import { Page } from 'puppeteer-core';
 
 @Injectable()
 export class LeekTvService {
@@ -13,14 +14,12 @@ export class LeekTvService {
 
   async start(): Promise<void> {
     Logger.log('connecting to leekwars with puppeteer');
-    const fight = await this.leekwarsService.pickAFight();
     const browser = await launch({
-      headless: true,
       executablePath: executablePath(),
     });
     const [page] = await browser.pages();
 
-    await page.goto(`https://leekwars.com/fight/${fight}`);
+    await page.goto(`https://leekwars.com/`);
     await page.setViewport({
       width: 1920,
       height: 1080,
@@ -32,15 +31,40 @@ export class LeekTvService {
     });
     await this.twitchService.broadcast(stream);
 
-    const secondFight = await this.leekwarsService.pickAFight();
-    await page.waitForXPath("//*[contains(text(), 'See the match again')]", {
-      timeout: 1000 * 60 * 3,
-    });
+    await this.waitFor(120);
 
-    await page.goto(`https://leekwars.com/fight/${secondFight}`);
-    await page.waitForXPath("//span[contains(text(), 'See the match again')]", {
-      timeout: 1000 * 60 * 3,
+    for (let i = 0; i < 5; i++) {
+      const fight = await this.leekwarsService.pickAFight();
+      await page.goto(`https://leekwars.com/fight/${fight}`);
+      await page.setViewport({
+        width: 1920,
+        height: 1080,
+      });
+
+      await page.waitForXPath(
+        "//span[contains(text(), 'See the match again')]",
+        {
+          timeout: 1000 * 60 * 3,
+        },
+      );
+      await this.waitFor(30);
+    }
+
+    await page.goto(`https://leekwars.com/`);
+    await page.setViewport({
+      width: 1920,
+      height: 1080,
     });
+    await this.waitFor(30);
+
     process.exit(0);
+  }
+
+  waitFor(seconds: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, seconds * 1000);
+    });
   }
 }

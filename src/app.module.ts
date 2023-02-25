@@ -4,6 +4,7 @@ import { TwitchModule } from './twitch/twitch.module';
 import { ConfigModule } from '@nestjs/config';
 import { appConfigurations } from './config/configuration';
 import { LeekwarsModule } from './leekwars/leekwars.module';
+import { StreamScreensModule } from './stream-screens/stream-screens.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { LeekwarsModule } from './leekwars/leekwars.module';
       isGlobal: true,
     }),
     LeekwarsModule,
+    StreamScreensModule,
   ],
 })
 export class AppModule {}
