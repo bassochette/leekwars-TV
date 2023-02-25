@@ -3,7 +3,7 @@ import { TwitchIngest, TwitchIngests } from './twitch-ingest.dto';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { ConfigType } from '@nestjs/config';
-import { configurations } from '../config/configuration';
+import { appConfigurations } from '../config/configuration';
 import { Stream } from 'puppeteer-stream';
 import * as child_process from 'child_process';
 
@@ -11,8 +11,8 @@ import * as child_process from 'child_process';
 export class TwitchService {
   constructor(
     private readonly httpService: HttpService,
-    @Inject(configurations.KEY)
-    private readonly config: ConfigType<typeof configurations>,
+    @Inject(appConfigurations.KEY)
+    private readonly config: ConfigType<typeof appConfigurations>,
   ) {}
 
   async getIngest(): Promise<string> {

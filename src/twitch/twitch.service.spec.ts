@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TwitchService } from './twitch.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-import { configurations } from '../config/configuration';
+import { appConfigurations } from '../config/configuration';
 
 describe('TwitchService', () => {
   let service: TwitchService;
@@ -12,7 +12,7 @@ describe('TwitchService', () => {
       imports: [
         HttpModule,
         ConfigModule.forRoot({
-          load: [configurations],
+          load: [appConfigurations],
           ignoreEnvFile: true,
         }),
       ],
